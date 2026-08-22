@@ -168,7 +168,7 @@ Fk       : user_id, account_id
 ----18. subscription_events
 
 Grain      : One row = one event/change to one subscription.
-Rowcount   : 
+Rowcount   : 3741
 Purpose    : Records subscription lifecycle events and the resulting MRR movements.
 Pk         : event_id
 Fk         : subscription_id, user_id
@@ -208,3 +208,130 @@ Rowcount     : 2556
 Purpose      : Stores user-level information, including their company, signup details, plan, and activity status.
 Pk           : user_id
 Fk           : account_id
+
+
+
+---------------------Column dictionary for the top 6 most important tables---------------------------------------------------
+
+1. Accounts:
+
+
+account_id	               : Unique identifier of the customer account
+name	                   : Name of the customer/account	
+account_type	           : Type of customer account
+industry	               : Industry of the customer	
+employee_count	           : Number of employees/users associated with the account	
+country	                   : Country of the customer account	
+signup_date	               : Date when the account signed up	
+acquisition_channel	       : Channel through which the account was acquired
+
+
+2. Users :
+
+user_id	                   : Unique identifier for each user
+email	                   : User's email address	
+company_name	           : Name of the company associated with the user
+signup_date	               : Date when the user signed up	
+signup_source	           : Channel through which the user signed up
+plan_type	               : Plan associated with the user
+is_active	               : Indicates whether the user is currently active (1) or inactive (0)
+last_login_date	           : Date of the user's most recent login	
+account_id	               : Identifier of the account/company the user belongs to; FK to accounts
+
+
+3. subscription
+
+
+subscription_id	           : Unique identifier for each subscription
+user_id	                   : User associated with the subscription; 
+account_id	               : Customer account associated with the subscription	
+plan	                   : Name of the subscription plan	
+start_date	               : Date the subscription period started	
+end_date	               : Date the subscription period ended, if applicable	
+mrr	                       : Monthly recurring revenue associated with the subscription	
+status	                   : Current subscription status
+cancelled_at	           : Date/time when the subscription was cancelled
+cancellation_reason	       : Reason for subscription cancellation
+
+
+4. subscription_events
+
+event_id	               : Unique ID of the subscription event	
+subscription_id	           : Subscription affected by the event	
+user_id	                   : User associated with the subscription event
+event_type	               : Type of change/action that happened	
+event_time	               : When the event happened	
+from_plan	               : Previous plan before the change;	NULL for a new subscription
+to_plan	                   : New plan after the change
+mrr_delta	               : Change in monthly recurring revenue caused by the event
+account_id	               : Customer account associated with the subscription
+actor_user_id	           : User who triggered the subscription change	
+seats_delta	               : Change in the number of seats caused by the event
+
+5. plans
+
+plan_id	                   : Unique identifier for each plan/pricing configuration
+plan_name	               : Name of the subscription plan
+monthly_price	           : Price charged per month for that plan
+seat_limit	               : Maximum number of seats/users allowed under the plan
+billing_interval	       : How often the customer is billed
+
+6. features
+
+feature_id	              : Unique identifier for each product feature	
+feature_name	          : Name of the feature	Dashboard
+category	              : Category/group the feature belongs to
+release_date              : Date the feature was released
+
+
+7. payment_attempts
+
+attempt_id	             : Unique ID of each payment attempt
+invoice_id	             : Invoice for which the payment was attempted
+user_id	                 : User associated with the payment	
+subscription_id	         : Subscription associated with the payment	
+amount	                 : Amount attempted to be charged
+status	                 : Result of the payment attempt
+failure_reason	         : Reason the payment failed
+attempt_number	         : Number of the retry attempt	
+attempted_at	         : Date/time of the payment attempt
+account_id	             : Customer account associated with the payment
+
+
+
+---------------------Data quality findings----------------------------------
+
+1. subscriptions contains inconsistent capitalization and naming such as pro, Pro, and enterprise. Queries should normalize plan names using LOWER()
+
+2. Many subscription rows have NULL cancellation_reason; this is expected for subscriptions that have not been cancelled, but cancellation records should be checked for missing reasons.
+
+3. Some events reference users that do not exist in the users table
+
+
+
+
+--------------1. Active paying Accounts
+
+SELECT 
+
+        COUNT(DISTINCT account_id) AS active_paying_accounts
+  FROM saas.subscriptions
+  WHERE status = 'active'
+  AND LOWER(plan) <> 'free';
+  
+
+-----2. Breakdown of accounts by plan
+
+select 
+        lower(plan),
+		count(distinct account_id) as account_count 
+	from saas.Subscription
+	group by lower(plan)
+	
+----3. Ten subscription events chronologically
+
+select  
+       *
+	from saas.subscription_events
+	order by event_time asc
+	limit 10
