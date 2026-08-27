@@ -23,7 +23,7 @@ Among customers who activated within 7 days, median activation time is generally
 - What caused activation to decline after the May 18 cohort?
 - Which acquisition channels bring customers who activate faster?
 - Which customer, product, or category segments have the strongest and weakest 7-day activation?
-## Q2 — Checkout Funnel Leakage: Paid vs Organic
+## Q2 : Checkout Funnel Leakage: Paid vs Organic
 
 ### **What the query does**
 
@@ -66,3 +66,23 @@ These flagged SKUs may indicate **price, image, or stock issues** and should be 
 - Is the low ATC rate caused by **price, image quality, or stock availability**?
 - Would **discounts or promotions** improve ATC conversion?
 - Which **top 10 high-view, low-relative-ATC products** should the merchandising PM investigate first?
+
+# Q5 : Cart Abandonment: Cart Value → GMV Left on Table
+
+### **What the query does**
+
+Measures cart abandonment across different cart-value buckets and shows **how many ATC sessions are converted to purchase, how many are abandoned, and the GMV lost from abandoned carts**.
+
+### **Pattern choice**
+
+Uses two CTEs: `session_with_amt` calculates the **total cart value per session**, while `cart_bucket` assigns each session to a cart-value bucket and identifies whether the session had a purchase event. The final query aggregates ATC sessions, purchases, abandonment rate, and abandoned GMV by bucket.
+
+### **Business interpretation**
+
+Abandonment is highest for **lower-value carts**, reaching **53% for carts below ₹500**, compared with only **12% for ₹15,000+ carts**. However, the largest GMV opportunity is in the **₹5,000+ buckets**, where abandoned carts account for about **₹15.7M** in potential GMV.
+
+### **What I'd ask next**
+
+- Should we prioritize **checkout reliability for ₹5,000+ carts**, since they contribute the most GMV left on the table?
+- What **products, categories, and customer segments** are driving the high abandonment rate in the `<₹500` bucket?
+- Can **free-shipping thresholds or promotions** improve conversion for low-value carts?
