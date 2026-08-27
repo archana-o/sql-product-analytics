@@ -1,4 +1,11 @@
 
+-- Q[5] — Cart Abandonment by Cart Value Bucket
+-- Business question:  Cart abandonment is 70% overall — but is it the same for ₹500 carts as ₹15,000 carts? Where do we lose the most rupees?
+-- What this tells us: Abandonment is highest for lower-value carts, reaching 53% for carts below ₹500, but the largest financial loss comes from higher-value carts. The ₹5,000+ buckets account for approximately ₹15.7M in GMV left on the table, making high-value carts the biggest revenue opportunity.
+-- PM Action:Prioritize checkout reliability for ₹5,000+ carts and investigate payment failures, checkout errors, and other friction points. For the <₹500 bucket, investigate whether free-shipping thresholds or promotions can reduce abandonment.
+-- Sanity check: Sum of atc_sessions across buckets equals total ATC sessions in the same window .
+
+
 
 WITH session_with_amt AS (
     SELECT 
