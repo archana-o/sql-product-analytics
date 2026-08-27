@@ -1,5 +1,9 @@
 
-
+-- Q[4] — [ PDP Engagement: High-View, Low-Cart Products]
+-- Business question: Which products attract eyeballs but don't get added to cart? Those are either pricing problems, image problems, or stock problems.
+-- What this tells us: Products with high views but low ATC rates relative to their category median are losing potential conversions despite attracting customer interest. These SKUs are strong candidates for merchandising investigation because the issue may be related to price, product imagery, or stock availability.
+-- PM Action: Hand the top 10 flagged SKUs to the merchandising PM and investigate one hypothesis per SKU: price, image, or stock.
+-- Sanity check: add_to_cart_sessions <= views for every product. atc_rate between 0 and 1.
 
 
 
