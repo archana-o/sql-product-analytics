@@ -126,3 +126,37 @@ Abandonment is highest for **lower-value carts**, reaching **53% for carts below
 - What **products, categories, and customer segments** are driving the high abandonment rate in the `<₹500` bucket?
 - Can **free-shipping thresholds or promotions** improve conversion for low-value carts?
 ---
+
+# Query S1 — Monthly MRR Movement Decomposition
+
+### **What the query does**
+
+Measures monthly MRR movement and identifies what drives the change: **new, expansion, contraction, churn, and reactivation**.
+
+Output includes monthly MRR movements, **net new MRR**, and **ending MRR**.
+
+### **Pattern choice**
+
+Uses two CTEs:
+
+- `classified` → assigns each event to an MRR bucket.
+- `monthly_mrr` → aggregates MRR movement by month.
+
+`ending_mrr` is calculated cumulatively from monthly `net_new_mrr`.
+
+The analysis excludes the **234 future-dated legacy rows** using the `2026-06-15` cutoff.
+
+### **Business interpretation**
+
+- MRR increased from **₹169.92 in Aug 2025** to **₹164.32K in Jun 2026**.
+- **March 2026** had the largest churn spike: **₹13.82K**, ~**2.8× February**.
+- Despite the churn spike, March still generated **₹12.05K net new MRR**.
+- **May 2026** recorded the highest new MRR at **₹24.17K**.
+- Overall MRR growth was driven mainly by **new and expansion MRR** outweighing contraction and churn.
+
+### **What I'd ask next**
+
+- Why did churn MRR spike in March?
+- Which signup cohort contributed most to the spike?
+- Which plans or acquisition channels had the highest churn?
+- Did churned customers show weaker engagement before cancellation?
