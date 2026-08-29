@@ -160,3 +160,33 @@ The analysis excludes the **234 future-dated legacy rows** using the `2026-06-15
 - Which signup cohort contributed most to the spike?
 - Which plans or acquisition channels had the highest churn?
 - Did churned customers show weaker engagement before cancellation?
+
+---
+
+# Query S2 — Trial-to-Paid Conversion by Cohort
+
+### **What the query does**
+
+Measures **trial-to-paid conversion** across weekly trial cohorts within **14, 30, and 60 days**.
+
+Output includes trial size, conversion counts/rates, and median days to conversion.
+
+### **Pattern choice**
+
+Uses a CTE to calculate **days from trial start to conversion**, then aggregates results by weekly trial cohort.
+
+No `ROW_NUMBER()` is required because the trials table has one row per trial/account.
+
+### **Business interpretation**
+
+Most conversions happen within the **first 14 days**, with little additional conversion by 30 or 60 days.
+
+Conversion rates vary across cohorts, but small cohorts should be interpreted cautiously. Median conversion time is generally around **9–14 days**.
+
+### **What I'd ask next**
+
+- Which channels drive the highest trial conversion?
+- What behaviors predict conversion within 14 days?
+- Why do some cohorts convert better than others?
+
+
