@@ -1,3 +1,13 @@
+
+-- Q[1] —  Monthly MRR Movement Decomposition
+-- Business question:  How did MRR change last month — and what drove the change? New, expansion, contraction, or churn?
+-- What this tells us: MRR grew strongly from ₹169.92 in August 2025 to ₹164.32K in June 2026, driven mainly by new and expansion MRR. March 2026 stands out because churn MRR spiked to ₹13.82K, approximately 2.8x February's ₹4.90K, making churn the key revenue-retention risk.
+-- PM Action: Investigate the March churn spike using a signup cohort × churn month cut, then segment the affected cohort by plan, acquisition channel, and product engagement to identify the root cause. 
+-- Sanity check: ending_mrr_month_N = ending_mrr_month_N-1 + net_new_mrr_month_N. Reconcile event-sum ending MRR against an independent month-end MRR snapshot; the two should be within ~1%.
+
+
+
+
 WITH classified AS (
     SELECT
         DATE_TRUNC('month', event_time) AS month,
