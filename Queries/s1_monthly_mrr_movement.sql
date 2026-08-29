@@ -1,0 +1,87 @@
+WITH classified AS (
+    SELECT
+        DATE_TRUNC('month', event_time) AS month,
+
+        CASE
+            WHEN event_type = 'subscription_started'
+                 AND EXISTS (
+                     SELECT 1
+                     FROM saas.subscription_events p
+                     WHERE p.account_id = se.account_id
+                       AND p.event_type = 'cancelled'
+                       AND p.event_time < se.event_time
+                 )
+            THEN 'reactivation'
+
+            WHEN event_type IN ('subscription_started', 'trial_converted')
+            THEN 'new'
+
+            WHEN event_type = 'plan_changed'
+                 AND mrr_delta > 0
+            THEN 'expansion'
+
+            WHEN event_type IN ('seat_add', 'addon_attach')
+            THEN 'expansion'
+
+            WHEN event_type = 'plan_changed'
+                 AND mrr_delta < 0
+            THEN 'contraction'
+
+            WHEN event_type = 'cancelled'
+            THEN 'churn'
+        END AS bucket,
+
+        mrr_delta
+
+    FROM saas.subscription_events se
+
+    WHERE event_type <> 'trial_started'
+      AND event_time >= CURRENT_DATE - INTERVAL '12 months'
+      AND event_time <= DATE '2026-06-15'
+),
+
+monthly_mrr AS (
+    SELECT
+        month,
+
+        SUM(mrr_delta) FILTER (
+            WHERE bucket = 'new'
+        ) AS new_mrr,
+
+        SUM(mrr_delta) FILTER (
+            WHERE bucket = 'expansion'
+        ) AS expansion_mrr,
+
+        SUM(mrr_delta) FILTER (
+            WHERE bucket = 'contraction'
+        ) AS contraction_mrr,
+
+        SUM(mrr_delta) FILTER (
+            WHERE bucket = 'churn'
+        ) AS churn_mrr,
+
+        SUM(mrr_delta) FILTER (
+            WHERE bucket = 'reactivation'
+        ) AS reactivation_mrr,
+
+        SUM(mrr_delta) AS net_new_mrr
+
+    FROM classified
+    GROUP BY month
+)
+
+SELECT
+    month,
+    new_mrr,
+    expansion_mrr,
+    contraction_mrr,
+    churn_mrr,
+    reactivation_mrr,
+    net_new_mrr,
+
+    SUM(net_new_mrr) OVER (
+        ORDER BY month
+    ) AS ending_mrr
+
+FROM monthly_mrr
+ORDER BY month;
