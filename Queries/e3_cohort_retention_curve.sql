@@ -1,4 +1,9 @@
 
+-- Q[3] — Cohort Retention Curve (Weekly, Behavioral)
+-- Business question: How well do customers continue to engage after signup, and where does retention drop across Week 0 to Week 4?
+-- What this tells us: Retention varies across signup cohorts, with W1 retention reaching a high of 36% for the May 11 cohort. Retention declines in later cohorts, especially May 25 and June 1. The latest cohorts should be interpreted cautiously because they may not have a complete observation window.
+-- PM Action: Compare high- and low-retention cohorts by acquisition channel, device, customer segment, and event type to identify what is driving retention changes.
+-- Sanity check: w1_retained <= cohort_size, w2_retained <= cohort_size, etc. Retention rates should be between 0 and 1
 
 
 
